@@ -46,9 +46,16 @@
 - list location history
 - location history tests
 
+## Milestone 6: Realtime Location Updates
+
+- Socket.io server initialization
+- JWT socket authentication
+- emergency room join/leave events
+- REST-created location broadcasts
+- realtime integration tests
+
 ## Later Milestones
 
-- realtime updates
 - evidence uploads
 - dashboard MVP
 - mobile MVP

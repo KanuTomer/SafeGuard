@@ -18,9 +18,7 @@ This structure keeps Express code readable while teaching common MERN architectu
 
 ## Current Status
 
-Milestone 1 adds the backend foundation: Express setup, environment configuration, MongoDB connection setup, health routing, and centralized error handling.
-
-Authentication, business models, emergency APIs, uploads, and realtime behavior will be added in later milestones.
+The backend currently supports authentication, user profiles, embedded emergency contacts, emergency sessions, location history, and Socket.io realtime location broadcasts.
 
 ## Backend Startup Flow
 
@@ -28,7 +26,9 @@ Authentication, business models, emergency APIs, uploads, and realtime behavior 
 server.js
   -> loads environment config
   -> initializes MongoDB connection
-  -> starts the Express server
+  -> creates an HTTP server from the Express app
+  -> initializes Socket.io on the HTTP server
+  -> starts listening for REST and Socket.io traffic
 
 app.js
   -> configures Express middleware
@@ -38,6 +38,22 @@ app.js
 ```
 
 The split between `app.js` and `server.js` keeps tests simple because Supertest can import the Express app without opening a network port or connecting to MongoDB.
+
+Socket.io is attached in `server.js` because realtime traffic needs the underlying HTTP server. The initialized `io` instance is stored on the Express app so REST controllers can broadcast events after successful database writes.
+
+## Realtime Flow
+
+```text
+Client connects with JWT
+  -> Socket.io authenticates the token
+  -> client emits emergency:join
+  -> server verifies emergency ownership
+  -> socket joins emergency:<emergencyId>
+  -> REST location creation succeeds
+  -> server broadcasts location:created to the emergency room
+```
+
+REST remains the source of truth for writes. Socket.io currently handles subscription and broadcast only.
 
 ## Folder Responsibilities
 

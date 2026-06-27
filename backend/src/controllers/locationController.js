@@ -1,9 +1,16 @@
 const { createLocationPoint, listLocationPoints } = require('../services/locationService');
+const { buildEmergencyRoom } = require('../sockets/emergencySocket');
 const { sendSuccess } = require('../utils/apiResponse');
 
 const createLocation = async (req, res, next) => {
   try {
     const location = await createLocationPoint(req.user._id, req.params.emergencyId, req.body);
+    const io = req.app.get('io');
+
+    if (io) {
+      io.to(buildEmergencyRoom(req.params.emergencyId)).emit('location:created', { location });
+    }
+
     return sendSuccess(res, 201, 'Location point created successfully', { location });
   } catch (error) {
     return next(error);

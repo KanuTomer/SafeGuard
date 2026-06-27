@@ -360,6 +360,84 @@ Authentication required.
 - `401 Unauthorized`: missing or invalid token
 - `404 Not Found`: emergency session does not exist or belongs to another user
 
+## Socket.io Events
+
+Socket clients authenticate with a JWT in the connection auth payload:
+
+```js
+io('http://localhost:5000', {
+  auth: {
+    token: 'jwt_token',
+  },
+});
+```
+
+### emergency:join
+
+Joins a realtime emergency room after verifying the emergency session belongs to the authenticated user.
+
+#### Client Payload
+
+```json
+{
+  "emergencyId": "507f1f77bcf86cd799439011"
+}
+```
+
+#### Server Response Event
+
+`emergency:joined`
+
+```json
+{
+  "emergencyId": "507f1f77bcf86cd799439011",
+  "room": "emergency:507f1f77bcf86cd799439011"
+}
+```
+
+### emergency:leave
+
+Leaves a realtime emergency room.
+
+#### Server Response Event
+
+`emergency:left`
+
+```json
+{
+  "emergencyId": "507f1f77bcf86cd799439011",
+  "room": "emergency:507f1f77bcf86cd799439011"
+}
+```
+
+### location:created
+
+Broadcast by the server to `emergency:<emergencyId>` after the REST location endpoint creates a location point.
+
+```json
+{
+  "location": {
+    "id": "507f1f77bcf86cd799439011",
+    "user": "507f1f77bcf86cd799439012",
+    "emergencySession": "507f1f77bcf86cd799439013",
+    "latitude": 28.6139,
+    "longitude": 77.209,
+    "accuracy": 12,
+    "recordedAt": "2026-06-27T12:00:00.000Z"
+  }
+}
+```
+
+### socket:error
+
+Emitted for invalid room access, invalid emergency ids, and unauthorized emergency sessions.
+
+```json
+{
+  "message": "Emergency session not found"
+}
+```
+
 ## Standard Error Responses
 
 Unknown routes return the standard error format:

@@ -44,3 +44,32 @@ Adds the backend foundation: Express middleware, environment configuration, Mong
 ### Next Milestone
 
 Milestone 2 will implement authentication with the User model, bcrypt password hashing, JWT login/register flows, protected route middleware, and authentication tests.
+
+## Milestone 2
+
+### Summary
+
+Adds backend authentication with a Mongoose User model, bcrypt password hashing, JWT registration and login, protected current-user route, request validation, auth middleware, and API tests.
+
+### Lessons Learned
+
+- Passwords should be stored as hashes, never raw strings.
+- JWTs are useful for API-first applications with mobile and web clients.
+- Auth middleware keeps protected routes consistent and reusable.
+- Duplicate email checks belong in service logic, while unique indexes belong in MongoDB.
+- `mongodb-memory-server` gives auth tests real Mongoose behavior without requiring a shared test database.
+
+### Files Added
+
+- `backend/src/models/User.js`
+- `backend/src/controllers/authController.js`
+- `backend/src/routes/authRoutes.js`
+- `backend/src/services/authService.js`
+- `backend/src/middleware/authMiddleware.js`
+- `backend/src/utils/generateToken.js`
+- `backend/src/validators/authValidator.js`
+- `backend/src/tests/auth.test.js`
+
+### Next Milestone
+
+Milestone 3 will add user profile and embedded emergency contacts CRUD.

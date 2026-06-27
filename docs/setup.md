@@ -27,13 +27,15 @@ cp dashboard/.env.example dashboard/.env
 cp mobile/.env.example mobile/.env
 ```
 
-Backend Milestone 1 variables:
+Backend variables:
 
 ```text
 NODE_ENV=development
 PORT=5000
 MONGODB_URI=mongodb+srv://username:password@cluster.example.mongodb.net/safeguard
 CLIENT_URL=http://localhost:5173
+JWT_SECRET=replace_with_a_long_random_secret
+JWT_EXPIRES_IN=7d
 ```
 
 ## Development Commands
@@ -49,3 +51,7 @@ Backend health check:
 ```bash
 curl http://localhost:5000/api/health
 ```
+
+## Backend Tests
+
+Backend authentication tests use `mongodb-memory-server` so Mongoose schemas, password hashing hooks, unique indexes, and queries can be tested without touching MongoDB Atlas.

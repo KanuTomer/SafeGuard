@@ -98,3 +98,29 @@ Adds protected user profile endpoints and embedded emergency contacts CRUD insid
 ### Next Milestone
 
 Milestone 4 will add emergency session creation, status management, and session history.
+
+## Milestone 4
+
+### Summary
+
+Adds the backend emergency session API with authenticated session creation, active-session lookup, session history, owned-session retrieval, and session ending.
+
+### Lessons Learned
+
+- Separate collections are useful for event-like records that can grow independently from the User document.
+- Ownership checks should be enforced in service-layer database queries.
+- Snapshotting embedded contacts preserves historical context for emergency sessions.
+- REST endpoints can model the source of truth before realtime Socket.io behavior is introduced.
+
+### Files Added
+
+- `backend/src/models/EmergencySession.js`
+- `backend/src/controllers/emergencyController.js`
+- `backend/src/routes/emergencyRoutes.js`
+- `backend/src/services/emergencyService.js`
+- `backend/src/validators/emergencyValidator.js`
+- `backend/src/tests/emergency.test.js`
+
+### Next Milestone
+
+Milestone 5 will add location history for emergency sessions.

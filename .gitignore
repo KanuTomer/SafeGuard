@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage and build output
+coverage/
+dist/
+build/
+*.tsbuildinfo
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Backend
+backend/coverage/
+
+# Dashboard
+dashboard/dist/
+
+# React Native
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/ios/build/
+mobile/ios/Pods/
+mobile/ios/*.xcworkspace/
+mobile/.metro-health-check*
+
+# Secrets and generated keys
+*.pem
+*.key

@@ -173,3 +173,31 @@ Adds backend Socket.io support for authenticated realtime emergency rooms and br
 ### Next Milestone
 
 Milestone 7 will add evidence upload backend support.
+
+## Milestone 7
+
+### Summary
+
+Adds backend evidence upload support for active emergency sessions using Multer memory uploads, Cloudinary storage, and MongoDB evidence metadata records.
+
+### Lessons Learned
+
+- Multer can parse multipart form-data and keep files in memory for direct cloud uploads.
+- Cloudinary stores binary assets while MongoDB stores metadata and ownership links.
+- Upload endpoints need both file validation and service-layer ownership checks.
+- Tests can mock cloud storage so upload behavior is covered without real credentials.
+
+### Files Added
+
+- `backend/src/config/cloudinary.js`
+- `backend/src/models/Evidence.js`
+- `backend/src/controllers/evidenceController.js`
+- `backend/src/services/evidenceService.js`
+- `backend/src/middleware/uploadMiddleware.js`
+- `backend/src/utils/cloudinaryUpload.js`
+- `backend/src/validators/evidenceValidator.js`
+- `backend/src/tests/evidence.test.js`
+
+### Next Milestone
+
+Milestone 8 will begin the React dashboard MVP.

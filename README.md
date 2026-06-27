@@ -108,9 +108,11 @@ GET /api/emergencies/active
 GET /api/emergencies
 GET /api/emergencies/:emergencyId
 PATCH /api/emergencies/:emergencyId/end
+POST /api/emergencies/:emergencyId/locations
+GET /api/emergencies/:emergencyId/locations
 ```
 
-Realtime events, location history, and evidence uploads will be implemented in later milestones.
+Realtime events and evidence uploads will be implemented in later milestones.
 
 ## Future Features
 

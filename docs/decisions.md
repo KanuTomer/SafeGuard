@@ -17,3 +17,9 @@ Emergency contacts will be embedded inside the user document in the MVP. This te
 ## ADR 004: REST Is the Source of Truth
 
 REST endpoints will persist and retrieve application data. Socket.io will only provide realtime updates.
+
+## ADR 005: Use JWT for API Authentication
+
+SafeGuard uses JWT authentication because the project has both mobile and web clients. JWTs fit an API-first MERN application and are straightforward for React Native and React clients to send as bearer tokens.
+
+Session-based authentication remains a strong option for browser-only applications, but JWTs better match this project's learning goals.

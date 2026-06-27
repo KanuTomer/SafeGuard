@@ -145,6 +145,82 @@ No body, query parameters, or authentication required.
 }
 ```
 
+### GET /api/users/me
+
+Returns the authenticated user's profile and embedded emergency contacts.
+
+Authentication required.
+
+#### Response: 200 OK
+
+```json
+{
+  "success": true,
+  "message": "User profile retrieved successfully",
+  "data": {
+    "user": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "Kanu Tomer",
+      "email": "kanu@example.com",
+      "phone": "+911234567890",
+      "contacts": []
+    }
+  }
+}
+```
+
+### PATCH /api/users/me
+
+Updates the authenticated user's editable profile fields.
+
+Authentication required.
+
+Allowed fields:
+
+```json
+{
+  "name": "Updated Name",
+  "phone": "+919999999999"
+}
+```
+
+Email and password changes are not supported by this endpoint.
+
+### GET /api/users/me/contacts
+
+Lists the authenticated user's embedded emergency contacts.
+
+Authentication required.
+
+### POST /api/users/me/contacts
+
+Adds an embedded emergency contact to the authenticated user.
+
+Authentication required.
+
+```json
+{
+  "name": "Parent",
+  "phone": "+911111111111",
+  "email": "parent@example.com",
+  "relationship": "Father"
+}
+```
+
+`name` is required. At least one of `phone` or `email` is required.
+
+### PATCH /api/users/me/contacts/:contactId
+
+Updates one embedded emergency contact by subdocument id.
+
+Authentication required.
+
+### DELETE /api/users/me/contacts/:contactId
+
+Deletes one embedded emergency contact by subdocument id.
+
+Authentication required.
+
 #### Error Responses
 
 Unknown routes return the standard error format:

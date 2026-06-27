@@ -73,3 +73,28 @@ Adds backend authentication with a Mongoose User model, bcrypt password hashing,
 ### Next Milestone
 
 Milestone 3 will add user profile and embedded emergency contacts CRUD.
+
+## Milestone 3
+
+### Summary
+
+Adds protected user profile endpoints and embedded emergency contacts CRUD inside the existing User document.
+
+### Lessons Learned
+
+- Embedded MongoDB subdocuments are a good fit for small user-owned lists.
+- Route-level auth middleware keeps profile and contact APIs protected.
+- Services keep contact lookup and update logic out of controllers.
+- Profile update endpoints should explicitly allow fields instead of trusting the full request body.
+
+### Files Added
+
+- `backend/src/controllers/userController.js`
+- `backend/src/routes/userRoutes.js`
+- `backend/src/services/userService.js`
+- `backend/src/validators/userValidator.js`
+- `backend/src/tests/user.test.js`
+
+### Next Milestone
+
+Milestone 4 will add emergency session creation, status management, and session history.

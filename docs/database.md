@@ -58,3 +58,20 @@ updatedAt
 The User model hashes passwords with bcrypt in a pre-save hook. Passwords are only hashed when the password field is new or modified.
 
 The model also exposes `comparePassword(candidatePassword)` for login checks.
+
+## Embedded Emergency Contacts
+
+Emergency contacts are stored inside the owning User document:
+
+```text
+contacts[]
+  _id
+  name
+  phone
+  email
+  relationship
+```
+
+This is intentional for the MVP because it teaches MongoDB embedded subdocuments and keeps contact CRUD close to common MERN portfolio patterns.
+
+Contacts are always accessed through the authenticated user, so a separate ownership field is not required in this milestone.

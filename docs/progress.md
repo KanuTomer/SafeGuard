@@ -149,3 +149,27 @@ Adds backend location history for emergency sessions with protected endpoints to
 ### Next Milestone
 
 Milestone 6 will add Socket.io realtime location broadcasting.
+
+## Milestone 6
+
+### Summary
+
+Adds backend Socket.io support for authenticated realtime emergency rooms and broadcasts new REST-created location points to subscribed clients.
+
+### Lessons Learned
+
+- Socket.io runs on the HTTP server that wraps the Express app.
+- JWT authentication can protect websocket connections similarly to REST routes.
+- Rooms let the backend target realtime updates to a specific emergency session.
+- Keeping REST as the write path avoids duplicating validation and persistence logic in socket handlers.
+
+### Files Added
+
+- `backend/src/sockets/index.js`
+- `backend/src/sockets/socketAuth.js`
+- `backend/src/sockets/emergencySocket.js`
+- `backend/src/tests/socket.test.js`
+
+### Next Milestone
+
+Milestone 7 will add evidence upload backend support.

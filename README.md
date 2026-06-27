@@ -112,7 +112,18 @@ POST /api/emergencies/:emergencyId/locations
 GET /api/emergencies/:emergencyId/locations
 ```
 
-Realtime events and evidence uploads will be implemented in later milestones.
+Realtime Socket.io events:
+
+```text
+emergency:join
+emergency:leave
+emergency:joined
+emergency:left
+location:created
+socket:error
+```
+
+Evidence uploads will be implemented in a later milestone.
 
 ## Future Features
 
@@ -120,7 +131,7 @@ Realtime events and evidence uploads will be implemented in later milestones.
 - Emergency contact CRUD stored inside the user document
 - SOS emergency session lifecycle
 - Location history
-- Socket.io live dashboard updates
+- Socket.io live emergency location updates
 - Cloudinary evidence uploads
 - Mobile location and evidence capture
 - API and database documentation

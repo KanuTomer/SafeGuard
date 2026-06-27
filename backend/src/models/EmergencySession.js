@@ -90,6 +90,14 @@ const emergencySessionSchema = new mongoose.Schema(
 );
 
 emergencySessionSchema.index({ user: 1, status: 1, startedAt: -1 });
+emergencySessionSchema.index(
+  { user: 1, status: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: 'active' },
+    name: 'unique_active_emergency_session_per_user',
+  }
+);
 
 const EmergencySession = mongoose.model('EmergencySession', emergencySessionSchema);
 

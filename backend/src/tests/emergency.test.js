@@ -166,6 +166,30 @@ describe('Emergency session routes', () => {
 
       expect(response.body.message).toBe('An active emergency session already exists');
     });
+
+    it('allows creating a new session after the previous one is ended', async () => {
+      const { token } = await createAuthenticatedUser();
+
+      const createResponse = await request(app)
+        .post('/api/emergencies')
+        .set('Authorization', `Bearer ${token}`)
+        .send({})
+        .expect(201);
+
+      await request(app)
+        .patch(`/api/emergencies/${createResponse.body.data.emergency.id}/end`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      const response = await request(app)
+        .post('/api/emergencies')
+        .set('Authorization', `Bearer ${token}`)
+        .send({})
+        .expect(201);
+
+      expect(response.body.data.emergency.status).toBe('active');
+      expect(response.body.data.emergency.id).not.toBe(createResponse.body.data.emergency.id);
+    });
   });
 
   describe('GET /api/emergencies/active', () => {
@@ -263,6 +287,19 @@ describe('Emergency session routes', () => {
         .expect(404);
 
       expect(response.body.message).toBe('Emergency session not found');
+    });
+
+    it('rejects invalid emergency session ids', async () => {
+      const { token } = await createAuthenticatedUser();
+
+      const response = await request(app)
+        .get('/api/emergencies/not-a-valid-id')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(400);
+
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining(['Emergency session id must be valid'])
+      );
     });
   });
 

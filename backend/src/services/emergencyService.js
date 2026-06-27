@@ -72,12 +72,22 @@ const createEmergencySession = async (user, payload = {}) => {
   }
 
   const location = buildLocation(payload.initialLocation);
-  const session = await EmergencySession.create({
-    user: user._id,
-    initialLocation: location,
-    lastKnownLocation: location,
-    contactsSnapshot: buildContactsSnapshot(user),
-  });
+  let session;
+
+  try {
+    session = await EmergencySession.create({
+      user: user._id,
+      initialLocation: location,
+      lastKnownLocation: location,
+      contactsSnapshot: buildContactsSnapshot(user),
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      throw createEmergencyError('An active emergency session already exists', 409);
+    }
+
+    throw error;
+  }
 
   return formatEmergencySession(session);
 };

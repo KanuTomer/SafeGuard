@@ -114,6 +114,8 @@ updatedAt
 
 The compound index `{ user: 1, status: 1, startedAt: -1 }` supports finding a user's active session and listing sessions by recency.
 
+A partial unique index on `{ user: 1, status: 1 }` where `status` is `active` enforces one active emergency session per user at the database level.
+
 ### Design Notes
 
 Emergency sessions use a separate collection because sessions are event records that can grow over time and should not be embedded inside the User document.

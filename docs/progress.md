@@ -124,3 +124,28 @@ Adds the backend emergency session API with authenticated session creation, acti
 ### Next Milestone
 
 Milestone 5 will add location history for emergency sessions.
+
+## Milestone 5
+
+### Summary
+
+Adds backend location history for emergency sessions with protected endpoints to create and list location points for owned emergency sessions.
+
+### Lessons Learned
+
+- Related collections are useful when data can grow quickly, such as GPS history.
+- Nested REST routes work well for resources that belong to a parent resource.
+- Service-layer ownership checks prevent users from accessing another user's emergency location data.
+- Updating `lastKnownLocation` keeps emergency session summaries fast while preserving full history separately.
+
+### Files Added
+
+- `backend/src/models/LocationPoint.js`
+- `backend/src/controllers/locationController.js`
+- `backend/src/services/locationService.js`
+- `backend/src/validators/locationValidator.js`
+- `backend/src/tests/location.test.js`
+
+### Next Milestone
+
+Milestone 6 will add Socket.io realtime location broadcasting.

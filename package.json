@@ -1,0 +1,35 @@
+{
+  "name": "safeguard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SafeGuard is a MERN and React Native portfolio project for learning full-stack emergency-assistance app architecture.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:start": "npm --prefix backend start",
+    "backend:test": "npm --prefix backend test",
+    "backend:lint": "npm --prefix backend run lint",
+    "dashboard:dev": "npm --prefix dashboard run dev",
+    "dashboard:build": "npm --prefix dashboard run build",
+    "dashboard:lint": "npm --prefix dashboard run lint",
+    "mobile:start": "npm --prefix mobile start",
+    "mobile:android": "npm --prefix mobile run android",
+    "mobile:ios": "npm --prefix mobile run ios",
+    "mobile:test": "npm --prefix mobile test",
+    "mobile:lint": "npm --prefix mobile run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "npm run backend:lint && npm run dashboard:lint && npm run mobile:lint",
+    "test": "npm run backend:test && npm run mobile:test"
+  },
+  "keywords": [
+    "mern",
+    "react-native",
+    "express",
+    "mongodb",
+    "portfolio"
+  ],
+  "devDependencies": {
+    "prettier": "^3.9.0"
+  }
+}

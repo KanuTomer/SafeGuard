@@ -1,0 +1,11 @@
+node_modules
+coverage
+dist
+build
+.git
+
+backend/node_modules
+dashboard/node_modules
+mobile/node_modules
+mobile/android
+mobile/ios

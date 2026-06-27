@@ -75,7 +75,13 @@ npm run dashboard:dev
 npm run mobile:start
 ```
 
-The backend database, authentication, emergency APIs, realtime events, and evidence uploads will be implemented in later milestones.
+Backend health check:
+
+```bash
+curl http://localhost:5000/api/health
+```
+
+Authentication, emergency APIs, realtime events, and evidence uploads will be implemented in later milestones.
 
 ## Future Features
 

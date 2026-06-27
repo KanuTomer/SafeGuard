@@ -110,6 +110,8 @@ GET /api/emergencies/:emergencyId
 PATCH /api/emergencies/:emergencyId/end
 POST /api/emergencies/:emergencyId/locations
 GET /api/emergencies/:emergencyId/locations
+POST /api/emergencies/:emergencyId/evidence
+GET /api/emergencies/:emergencyId/evidence
 ```
 
 Realtime Socket.io events:
@@ -123,7 +125,7 @@ location:created
 socket:error
 ```
 
-Evidence uploads will be implemented in a later milestone.
+Evidence uploads are handled through Cloudinary-backed backend endpoints.
 
 ## Future Features
 

@@ -54,8 +54,15 @@
 - REST-created location broadcasts
 - realtime integration tests
 
+## Milestone 7: Evidence Upload Backend
+
+- evidence model
+- Cloudinary upload helper
+- image and audio upload endpoint
+- evidence listing endpoint
+- evidence upload tests
+
 ## Later Milestones
 
-- evidence uploads
 - dashboard MVP
 - mobile MVP

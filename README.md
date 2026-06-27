@@ -89,6 +89,17 @@ POST /api/auth/login
 GET /api/auth/me
 ```
 
+User profile and contact endpoints:
+
+```text
+GET /api/users/me
+PATCH /api/users/me
+GET /api/users/me/contacts
+POST /api/users/me/contacts
+PATCH /api/users/me/contacts/:contactId
+DELETE /api/users/me/contacts/:contactId
+```
+
 Emergency APIs, realtime events, and evidence uploads will be implemented in later milestones.
 
 ## Future Features

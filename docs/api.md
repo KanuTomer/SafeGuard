@@ -360,6 +360,80 @@ Authentication required.
 - `401 Unauthorized`: missing or invalid token
 - `404 Not Found`: emergency session does not exist or belongs to another user
 
+### POST /api/emergencies/:emergencyId/evidence
+
+Uploads one image or audio evidence file to an active emergency session owned by the authenticated user.
+
+Authentication required.
+
+#### Request
+
+Multipart form-data:
+
+```text
+file: image or audio file
+notes: optional text, max 500 characters
+```
+
+Accepted file types:
+
+```text
+image/jpeg
+image/png
+image/webp
+audio/mpeg
+audio/wav
+audio/mp4
+audio/aac
+audio/webm
+```
+
+Maximum file size: `10 MB`.
+
+#### Response: 201 Created
+
+```json
+{
+  "success": true,
+  "message": "Evidence uploaded successfully",
+  "data": {
+    "evidence": {
+      "id": "507f1f77bcf86cd799439011",
+      "user": "507f1f77bcf86cd799439012",
+      "emergencySession": "507f1f77bcf86cd799439013",
+      "type": "image",
+      "originalName": "door.png",
+      "mimeType": "image/png",
+      "size": 120000,
+      "cloudinaryPublicId": "safeguard/evidence/file",
+      "url": "http://res.cloudinary.com/example/file",
+      "secureUrl": "https://res.cloudinary.com/example/file",
+      "notes": "Front door photo"
+    }
+  }
+}
+```
+
+#### Error Responses
+
+- `400 Bad Request`: missing file, invalid file type, oversized file, invalid notes, or invalid emergency session id
+- `401 Unauthorized`: missing or invalid token
+- `404 Not Found`: emergency session does not exist or belongs to another user
+- `409 Conflict`: emergency session has already ended
+- `502 Bad Gateway`: Cloudinary upload failed
+
+### GET /api/emergencies/:emergencyId/evidence
+
+Lists evidence files for one owned emergency session, sorted newest first.
+
+Authentication required.
+
+#### Error Responses
+
+- `400 Bad Request`: invalid emergency session id
+- `401 Unauthorized`: missing or invalid token
+- `404 Not Found`: emergency session does not exist or belongs to another user
+
 ## Socket.io Events
 
 Socket clients authenticate with a JWT in the connection auth payload:

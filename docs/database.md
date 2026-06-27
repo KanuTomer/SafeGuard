@@ -13,7 +13,7 @@ SafeGuard will use MongoDB with Mongoose.
 
 ## Current Status
 
-The backend currently includes the User model for authentication, embedded emergency contacts, EmergencySession records for SOS lifecycle tracking, and LocationPoint records for emergency location history.
+The backend currently includes the User model for authentication, embedded emergency contacts, EmergencySession records for SOS lifecycle tracking, LocationPoint records for emergency location history, and Evidence records for uploaded image/audio metadata.
 
 ## Connection Strategy
 
@@ -166,3 +166,58 @@ The compound index `{ user: 1, emergencySession: 1, recordedAt: 1 }` supports ow
 Location points use their own collection because location history can grow quickly and should not be embedded inside EmergencySession documents.
 
 EmergencySession stores only `lastKnownLocation` as a summary field for fast reads, while the LocationPoint collection stores the full history.
+
+## Evidence Model
+
+```text
+user
+emergencySession
+type
+originalName
+mimeType
+size
+cloudinaryPublicId
+url
+secureUrl
+notes
+createdAt
+updatedAt
+```
+
+### Fields
+
+`user`: required ObjectId reference to the User who owns the emergency session.
+
+`emergencySession`: required ObjectId reference to the EmergencySession receiving the evidence.
+
+`type`: either `image` or `audio`.
+
+`originalName`: original uploaded filename.
+
+`mimeType`: uploaded file MIME type.
+
+`size`: uploaded file size in bytes.
+
+`cloudinaryPublicId`: Cloudinary asset public id.
+
+`url` and `secureUrl`: Cloudinary asset URLs.
+
+`notes`: optional user-provided notes, max 500 characters.
+
+`createdAt` and `updatedAt`: managed by Mongoose timestamps.
+
+### Indexes
+
+`user` is indexed for ownership-based queries.
+
+`emergencySession` is indexed for emergency evidence lookups.
+
+The compound index `{ emergencySession: 1, createdAt: -1 }` supports listing evidence newest first.
+
+The compound index `{ user: 1, emergencySession: 1, createdAt: -1 }` supports owned evidence queries.
+
+### Design Notes
+
+Cloudinary stores the binary file. MongoDB stores metadata and ownership references.
+
+Evidence is only uploaded while an emergency session is active in the MVP.

@@ -13,7 +13,7 @@ SafeGuard will use MongoDB with Mongoose.
 
 ## Current Status
 
-The backend currently includes the User model for authentication, embedded emergency contacts, and the EmergencySession model for SOS session lifecycle tracking.
+The backend currently includes the User model for authentication, embedded emergency contacts, EmergencySession records for SOS lifecycle tracking, and LocationPoint records for emergency location history.
 
 ## Connection Strategy
 
@@ -121,3 +121,48 @@ A partial unique index on `{ user: 1, status: 1 }` where `status` is `active` en
 Emergency sessions use a separate collection because sessions are event records that can grow over time and should not be embedded inside the User document.
 
 `contactsSnapshot` intentionally duplicates contact data so each emergency session preserves who the user had configured when the session started, even if the user later edits their contacts.
+
+## LocationPoint Model
+
+```text
+user
+emergencySession
+latitude
+longitude
+accuracy
+recordedAt
+createdAt
+updatedAt
+```
+
+### Fields
+
+`user`: required ObjectId reference to the User who owns the emergency session.
+
+`emergencySession`: required ObjectId reference to the EmergencySession receiving the location point.
+
+`latitude`: required number between `-90` and `90`.
+
+`longitude`: required number between `-180` and `180`.
+
+`accuracy`: optional non-negative number.
+
+`recordedAt`: when the location was captured, defaulting to the server time if not provided.
+
+`createdAt` and `updatedAt`: managed by Mongoose timestamps.
+
+### Indexes
+
+`user` is indexed for ownership-based queries.
+
+`emergencySession` is indexed for session history lookups.
+
+The compound index `{ emergencySession: 1, recordedAt: 1 }` supports reading a session's location history oldest to newest.
+
+The compound index `{ user: 1, emergencySession: 1, recordedAt: 1 }` supports owned location history queries.
+
+### Design Notes
+
+Location points use their own collection because location history can grow quickly and should not be embedded inside EmergencySession documents.
+
+EmergencySession stores only `lastKnownLocation` as a summary field for fast reads, while the LocationPoint collection stores the full history.

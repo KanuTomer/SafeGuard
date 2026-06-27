@@ -38,9 +38,16 @@
 - end session
 - emergency session tests
 
+## Milestone 5: Location History
+
+- location point model
+- add location points to active emergency sessions
+- update last known location
+- list location history
+- location history tests
+
 ## Later Milestones
 
-- location history
 - realtime updates
 - evidence uploads
 - dashboard MVP

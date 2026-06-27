@@ -18,7 +18,26 @@ This structure keeps Express code readable while teaching common MERN architectu
 
 ## Current Status
 
-Milestone 0 creates the project foundation only. API routes, database models, authentication, and realtime behavior will be added in later milestones.
+Milestone 1 adds the backend foundation: Express setup, environment configuration, MongoDB connection setup, health routing, and centralized error handling.
+
+Authentication, business models, emergency APIs, uploads, and realtime behavior will be added in later milestones.
+
+## Backend Startup Flow
+
+```text
+server.js
+  -> loads environment config
+  -> initializes MongoDB connection
+  -> starts the Express server
+
+app.js
+  -> configures Express middleware
+  -> mounts route modules
+  -> handles 404 responses
+  -> handles global errors
+```
+
+The split between `app.js` and `server.js` keeps tests simple because Supertest can import the Express app without opening a network port or connecting to MongoDB.
 
 ## Folder Responsibilities
 

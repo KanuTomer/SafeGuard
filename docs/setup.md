@@ -27,10 +27,25 @@ cp dashboard/.env.example dashboard/.env
 cp mobile/.env.example mobile/.env
 ```
 
+Backend Milestone 1 variables:
+
+```text
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb+srv://username:password@cluster.example.mongodb.net/safeguard
+CLIENT_URL=http://localhost:5173
+```
+
 ## Development Commands
 
 ```bash
 npm run backend:dev
 npm run dashboard:dev
 npm run mobile:start
+```
+
+Backend health check:
+
+```bash
+curl http://localhost:5000/api/health
 ```

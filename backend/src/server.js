@@ -1,9 +1,18 @@
-require('dotenv').config();
-
+const env = require('./config/env');
+const connectDB = require('./config/db');
 const app = require('./app');
 
-const PORT = process.env.PORT || 5000;
+const startServer = async () => {
+  try {
+    await connectDB();
 
-app.listen(PORT, () => {
-  console.log(`SafeGuard backend listening on port ${PORT}`);
-});
+    app.listen(env.port, () => {
+      console.log(`SafeGuard backend listening on port ${env.port}`);
+    });
+  } catch (error) {
+    console.error(`Server startup failed: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+startServer();

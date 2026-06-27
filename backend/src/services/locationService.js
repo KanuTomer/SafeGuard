@@ -39,6 +39,14 @@ const buildLocationSnapshot = (locationPoint) => ({
   timestamp: locationPoint.recordedAt,
 });
 
+const shouldUpdateLastKnownLocation = (emergency, locationPoint) => {
+  if (!emergency.lastKnownLocation) {
+    return true;
+  }
+
+  return locationPoint.recordedAt >= emergency.lastKnownLocation.timestamp;
+};
+
 const createLocationPoint = async (userId, emergencyId, payload) => {
   const emergency = await findOwnedEmergencySession(userId, emergencyId);
 
@@ -55,8 +63,10 @@ const createLocationPoint = async (userId, emergencyId, payload) => {
     recordedAt: payload.recordedAt ? new Date(payload.recordedAt) : new Date(),
   });
 
-  emergency.lastKnownLocation = buildLocationSnapshot(locationPoint);
-  await emergency.save();
+  if (shouldUpdateLastKnownLocation(emergency, locationPoint)) {
+    emergency.lastKnownLocation = buildLocationSnapshot(locationPoint);
+    await emergency.save();
+  }
 
   return formatLocationPoint(locationPoint);
 };

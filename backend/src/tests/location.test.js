@@ -111,6 +111,68 @@ describe('Location history routes', () => {
       });
     });
 
+    it('does not replace last known location with an older recorded point', async () => {
+      const { token, user } = await createAuthenticatedUser();
+      const emergency = await createEmergencySession(user, {
+        lastKnownLocation: {
+          latitude: 28.614,
+          longitude: 77.21,
+          accuracy: 8,
+          timestamp: new Date('2026-06-27T12:05:00.000Z'),
+        },
+      });
+
+      await request(app)
+        .post(`/api/emergencies/${emergency._id}/locations`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          latitude: 28.6139,
+          longitude: 77.209,
+          accuracy: 10,
+          recordedAt: '2026-06-27T12:00:00.000Z',
+        })
+        .expect(201);
+
+      const savedEmergency = await EmergencySession.findById(emergency._id);
+      expect(savedEmergency.lastKnownLocation.toObject()).toEqual({
+        latitude: 28.614,
+        longitude: 77.21,
+        accuracy: 8,
+        timestamp: new Date('2026-06-27T12:05:00.000Z'),
+      });
+    });
+
+    it('replaces last known location with a newer recorded point', async () => {
+      const { token, user } = await createAuthenticatedUser();
+      const emergency = await createEmergencySession(user, {
+        lastKnownLocation: {
+          latitude: 28.6139,
+          longitude: 77.209,
+          accuracy: 10,
+          timestamp: new Date('2026-06-27T12:00:00.000Z'),
+        },
+      });
+
+      await request(app)
+        .post(`/api/emergencies/${emergency._id}/locations`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          latitude: 28.614,
+          longitude: 77.21,
+          accuracy: 8,
+          recordedAt: '2026-06-27T12:05:00.000Z',
+        })
+        .expect(201);
+
+      const savedEmergency = await EmergencySession.findById(emergency._id);
+      expect(savedEmergency.lastKnownLocation.toObject()).toEqual({
+        latitude: 28.614,
+        longitude: 77.21,
+        accuracy: 8,
+        timestamp: new Date('2026-06-27T12:05:00.000Z'),
+      });
+    });
+
     it('rejects invalid coordinates', async () => {
       const { token, user } = await createAuthenticatedUser();
       const emergency = await createEmergencySession(user);

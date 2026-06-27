@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const env = require('./config/env');
 const authRoutes = require('./routes/authRoutes');
 const healthRoutes = require('./routes/healthRoutes');
+const userRoutes = require('./routes/userRoutes');
 const notFoundMiddleware = require('./middleware/notFoundMiddleware');
 const errorMiddleware = require('./middleware/errorMiddleware');
 
@@ -27,6 +28,7 @@ if (env.nodeEnv !== 'test') {
 
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

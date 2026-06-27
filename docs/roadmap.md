@@ -24,7 +24,6 @@
 
 ## Later Milestones
 
-- user profile and contacts
 - emergency sessions
 - location history
 - realtime updates

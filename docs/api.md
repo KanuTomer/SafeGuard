@@ -304,7 +304,63 @@ Authentication required.
 - `404 Not Found`: emergency session does not exist or belongs to another user
 - `409 Conflict`: emergency session has already ended
 
+### POST /api/emergencies/:emergencyId/locations
+
+Adds one location point to an active emergency session owned by the authenticated user.
+
+Authentication required.
+
+#### Request
+
+```json
+{
+  "latitude": 28.6139,
+  "longitude": 77.209,
+  "accuracy": 12,
+  "recordedAt": "2026-06-27T12:00:00.000Z"
+}
+```
+
+#### Response: 201 Created
+
+```json
+{
+  "success": true,
+  "message": "Location point created successfully",
+  "data": {
+    "location": {
+      "id": "507f1f77bcf86cd799439011",
+      "user": "507f1f77bcf86cd799439012",
+      "emergencySession": "507f1f77bcf86cd799439013",
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "accuracy": 12,
+      "recordedAt": "2026-06-27T12:00:00.000Z"
+    }
+  }
+}
+```
+
 #### Error Responses
+
+- `400 Bad Request`: invalid emergency session id or invalid location payload
+- `401 Unauthorized`: missing or invalid token
+- `404 Not Found`: emergency session does not exist or belongs to another user
+- `409 Conflict`: emergency session has already ended
+
+### GET /api/emergencies/:emergencyId/locations
+
+Lists location points for one owned emergency session, sorted oldest to newest.
+
+Authentication required.
+
+#### Error Responses
+
+- `400 Bad Request`: invalid emergency session id
+- `401 Unauthorized`: missing or invalid token
+- `404 Not Found`: emergency session does not exist or belongs to another user
+
+## Standard Error Responses
 
 Unknown routes return the standard error format:
 

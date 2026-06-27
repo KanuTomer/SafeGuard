@@ -123,6 +123,20 @@ describe('User profile routes', () => {
       await expect(savedUser.comparePassword(userPayload.password)).resolves.toBe(true);
       await expect(savedUser.comparePassword('ChangedPassword123')).resolves.toBe(false);
     });
+
+    it('rejects non-string profile names', async () => {
+      const { token } = await createAuthenticatedUser();
+
+      const response = await request(app)
+        .patch('/api/users/me')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 123,
+        })
+        .expect(400);
+
+      expect(response.body.errors).toEqual(expect.arrayContaining(['Name must be a string']));
+    });
   });
 });
 
@@ -162,6 +176,41 @@ describe('Emergency contact routes', () => {
           'Contact name must be at least 2 characters',
           'Contact phone or email is required',
         ])
+      );
+    });
+
+    it('rejects non-string contact names', async () => {
+      const { token } = await createAuthenticatedUser();
+
+      const response = await request(app)
+        .post('/api/users/me/contacts')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 123,
+          phone: '+911111111111',
+        })
+        .expect(400);
+
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining(['Contact name must be a string'])
+      );
+    });
+
+    it('rejects non-string contact methods', async () => {
+      const { token } = await createAuthenticatedUser();
+
+      const response = await request(app)
+        .post('/api/users/me/contacts')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Parent',
+          phone: 123,
+          email: false,
+        })
+        .expect(400);
+
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining(['Contact phone must be a string', 'Contact email must be a string'])
       );
     });
 

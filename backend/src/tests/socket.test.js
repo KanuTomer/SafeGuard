@@ -79,6 +79,24 @@ const waitForEvent = (client, eventName) => {
   });
 };
 
+const expectNoEvent = async (client, eventName, timeoutMs = 100) => {
+  const result = await new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      client.off(eventName, onEvent);
+      resolve(false);
+    }, timeoutMs);
+
+    function onEvent() {
+      clearTimeout(timeout);
+      resolve(true);
+    }
+
+    client.once(eventName, onEvent);
+  });
+
+  expect(result).toBe(false);
+};
+
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
@@ -130,6 +148,15 @@ describe('Socket.io realtime location updates', () => {
     const error = await expectConnectionError('invalid-token');
 
     expect(error.message).toBe('Invalid or expired authentication token');
+  });
+
+  it('rejects tokens for deleted users', async () => {
+    const { token, user } = await createAuthenticatedUser();
+    await User.findByIdAndDelete(user._id);
+
+    const error = await expectConnectionError(token);
+
+    expect(error.message).toBe('User for this token no longer exists');
   });
 
   it('allows an authenticated user to join an owned emergency room', async () => {
@@ -212,6 +239,35 @@ describe('Socket.io realtime location updates', () => {
     client.close();
   });
 
+  it('stops receiving location broadcasts after leaving an emergency room', async () => {
+    const { token, user } = await createAuthenticatedUser();
+    const emergency = await createEmergencySession(user);
+    const client = await connectSocket(token);
+
+    client.emit('emergency:join', { emergencyId: emergency._id.toString() });
+    await waitForEvent(client, 'emergency:joined');
+
+    const leftPromise = waitForEvent(client, 'emergency:left');
+    client.emit('emergency:leave', { emergencyId: emergency._id.toString() });
+
+    await expect(leftPromise).resolves.toEqual({
+      emergencyId: emergency._id.toString(),
+      room: `emergency:${emergency._id}`,
+    });
+
+    await request(app)
+      .post(`/api/emergencies/${emergency._id}/locations`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        latitude: 28.6139,
+        longitude: 77.209,
+      })
+      .expect(201);
+
+    await expectNoEvent(client, 'location:created');
+    client.close();
+  });
+
   it('does not broadcast REST-created locations to other emergency rooms', async () => {
     const { token, user } = await createAuthenticatedUser();
     const targetEmergency = await createEmergencySession(user);
@@ -224,11 +280,6 @@ describe('Socket.io realtime location updates', () => {
     client.emit('emergency:join', { emergencyId: otherEmergency._id.toString() });
     await waitForEvent(client, 'emergency:joined');
 
-    let receivedLocation = false;
-    client.once('location:created', () => {
-      receivedLocation = true;
-    });
-
     await request(app)
       .post(`/api/emergencies/${targetEmergency._id}/locations`)
       .set('Authorization', `Bearer ${token}`)
@@ -238,11 +289,7 @@ describe('Socket.io realtime location updates', () => {
       })
       .expect(201);
 
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
-    });
-
-    expect(receivedLocation).toBe(false);
+    await expectNoEvent(client, 'location:created');
     client.close();
   });
 
@@ -254,11 +301,6 @@ describe('Socket.io realtime location updates', () => {
     client.emit('emergency:join', { emergencyId: emergency._id.toString() });
     await waitForEvent(client, 'emergency:joined');
 
-    let receivedLocation = false;
-    client.once('location:created', () => {
-      receivedLocation = true;
-    });
-
     await request(app)
       .post(`/api/emergencies/${emergency._id}/locations`)
       .set('Authorization', `Bearer ${token}`)
@@ -268,11 +310,7 @@ describe('Socket.io realtime location updates', () => {
       })
       .expect(400);
 
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
-    });
-
-    expect(receivedLocation).toBe(false);
+    await expectNoEvent(client, 'location:created');
     client.close();
   });
 });

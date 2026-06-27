@@ -20,6 +20,10 @@ const getEvidenceType = (mimeType) => {
   return null;
 };
 
+const isValidCloudinaryResult = (uploadResult) => {
+  return Boolean(uploadResult?.public_id && uploadResult?.url && uploadResult?.secure_url);
+};
+
 const formatEvidence = (evidence) => ({
   id: evidence._id.toString(),
   user: evidence.user.toString(),
@@ -73,6 +77,10 @@ const createEvidence = async (userId, emergencyId, file, metadata = {}) => {
       resourceType: evidenceType === 'image' ? 'image' : 'video',
     });
   } catch {
+    throw createEvidenceError('Evidence upload failed', 502);
+  }
+
+  if (!isValidCloudinaryResult(uploadResult)) {
     throw createEvidenceError('Evidence upload failed', 502);
   }
 

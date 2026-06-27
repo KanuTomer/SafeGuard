@@ -298,12 +298,32 @@ describe('Evidence routes', () => {
       expect(response.body.errors).toEqual(
         expect.arrayContaining(['Notes cannot exceed 500 characters'])
       );
+      expect(uploadBufferToCloudinary).not.toHaveBeenCalled();
     });
 
     it('handles Cloudinary upload failures cleanly', async () => {
       const { token, user } = await createAuthenticatedUser();
       const emergency = await createEmergencySession(user);
       uploadBufferToCloudinary.mockRejectedValue(new Error('Cloudinary failed'));
+
+      const response = await request(app)
+        .post(`/api/emergencies/${emergency._id}/evidence`)
+        .set('Authorization', `Bearer ${token}`)
+        .attach('file', Buffer.from('fake image'), {
+          filename: 'door.png',
+          contentType: 'image/png',
+        })
+        .expect(502);
+
+      expect(response.body.message).toBe('Evidence upload failed');
+    });
+
+    it('handles incomplete Cloudinary upload responses cleanly', async () => {
+      const { token, user } = await createAuthenticatedUser();
+      const emergency = await createEmergencySession(user);
+      uploadBufferToCloudinary.mockResolvedValue({
+        public_id: 'safeguard/evidence/incomplete',
+      });
 
       const response = await request(app)
         .post(`/api/emergencies/${emergency._id}/evidence`)

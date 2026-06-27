@@ -5,6 +5,8 @@ const env = {
   port: process.env.PORT || 5000,
   mongodbUri: process.env.MONGODB_URI || '',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  jwtSecret: process.env.JWT_SECRET || '',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
 };
 
 module.exports = env;

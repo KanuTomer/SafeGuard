@@ -81,7 +81,15 @@ Backend health check:
 curl http://localhost:5000/api/health
 ```
 
-Authentication, emergency APIs, realtime events, and evidence uploads will be implemented in later milestones.
+Authentication endpoints:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+GET /api/auth/me
+```
+
+Emergency APIs, realtime events, and evidence uploads will be implemented in later milestones.
 
 ## Future Features
 

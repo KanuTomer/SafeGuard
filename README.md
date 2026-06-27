@@ -100,7 +100,17 @@ PATCH /api/users/me/contacts/:contactId
 DELETE /api/users/me/contacts/:contactId
 ```
 
-Emergency APIs, realtime events, and evidence uploads will be implemented in later milestones.
+Emergency session endpoints:
+
+```text
+POST /api/emergencies
+GET /api/emergencies/active
+GET /api/emergencies
+GET /api/emergencies/:emergencyId
+PATCH /api/emergencies/:emergencyId/end
+```
+
+Realtime events, location history, and evidence uploads will be implemented in later milestones.
 
 ## Future Features
 

@@ -221,6 +221,89 @@ Deletes one embedded emergency contact by subdocument id.
 
 Authentication required.
 
+### POST /api/emergencies
+
+Creates a new active emergency session for the authenticated user.
+
+Authentication required.
+
+#### Request
+
+The request body may be empty. `initialLocation` is optional.
+
+```json
+{
+  "initialLocation": {
+    "latitude": 28.6139,
+    "longitude": 77.209,
+    "accuracy": 12,
+    "timestamp": "2026-06-27T12:00:00.000Z"
+  }
+}
+```
+
+#### Response: 201 Created
+
+```json
+{
+  "success": true,
+  "message": "Emergency session created successfully",
+  "data": {
+    "emergency": {
+      "id": "507f1f77bcf86cd799439011",
+      "user": "507f1f77bcf86cd799439012",
+      "status": "active",
+      "startedAt": "2026-06-27T12:00:00.000Z",
+      "endedAt": null,
+      "initialLocation": null,
+      "lastKnownLocation": null,
+      "contactsSnapshot": []
+    }
+  }
+}
+```
+
+#### Error Responses
+
+- `400 Bad Request`: invalid initial location
+- `401 Unauthorized`: missing or invalid token
+- `409 Conflict`: active emergency session already exists
+
+### GET /api/emergencies/active
+
+Returns the authenticated user's active emergency session, or `null` if none exists.
+
+Authentication required.
+
+### GET /api/emergencies
+
+Lists the authenticated user's emergency sessions, newest first.
+
+Authentication required.
+
+### GET /api/emergencies/:emergencyId
+
+Returns one emergency session owned by the authenticated user.
+
+Authentication required.
+
+#### Error Responses
+
+- `400 Bad Request`: invalid emergency session id
+- `404 Not Found`: emergency session does not exist or belongs to another user
+
+### PATCH /api/emergencies/:emergencyId/end
+
+Ends one active emergency session owned by the authenticated user.
+
+Authentication required.
+
+#### Error Responses
+
+- `400 Bad Request`: invalid emergency session id
+- `404 Not Found`: emergency session does not exist or belongs to another user
+- `409 Conflict`: emergency session has already ended
+
 #### Error Responses
 
 Unknown routes return the standard error format:

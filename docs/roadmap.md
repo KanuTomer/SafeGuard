@@ -22,9 +22,24 @@
 - JWT auth middleware
 - auth tests
 
+## Milestone 3: User Profile and Emergency Contacts
+
+- protected profile endpoint
+- profile updates
+- embedded emergency contact CRUD
+- profile and contact tests
+
+## Milestone 4: Emergency Sessions
+
+- emergency session model
+- create active session
+- active session lookup
+- session history
+- end session
+- emergency session tests
+
 ## Later Milestones
 
-- emergency sessions
 - location history
 - realtime updates
 - evidence uploads

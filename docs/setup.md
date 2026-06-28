@@ -58,6 +58,13 @@ SOCKET_URL=http://10.0.2.2:5000
 
 `10.0.2.2` lets the Android emulator reach the backend running on the host machine at `localhost:5000`.
 
+For physical-device testing against the deployed backend, use:
+
+```text
+API_BASE_URL=https://safeguard-bi4x.onrender.com
+SOCKET_URL=https://safeguard-bi4x.onrender.com
+```
+
 ## Development Commands
 
 ```bash

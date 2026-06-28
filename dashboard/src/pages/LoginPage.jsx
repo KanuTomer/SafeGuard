@@ -7,13 +7,16 @@ import { getApiErrorMessage } from '../services/apiClient';
 import { useAuth } from '../hooks/useAuth';
 
 export function LoginPage() {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login, register } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mode, setMode] = useState('login');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
   if (isAuthenticated) {
     return <Navigate replace to="/dashboard" />;
@@ -25,7 +28,11 @@ export function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      if (mode === 'register') {
+        await register({ name, email, password, phone });
+      } else {
+        await login({ email, password });
+      }
       navigate(location.state?.from?.pathname || '/dashboard', { replace: true });
     } catch (loginError) {
       setError(getApiErrorMessage(loginError, 'Unable to sign in'));
@@ -54,15 +61,38 @@ export function LoginPage() {
           <Stack spacing={1}>
             <ShieldIcon color="primary" fontSize="large" />
             <Typography component="h1" variant="h4">
-              SafeGuard Dashboard
+              {mode === 'register' ? 'Create SafeGuard account' : 'SafeGuard Dashboard'}
             </Typography>
             <Typography color="text.secondary" variant="body2">
-              Sign in to review emergency sessions, location history, and evidence.
+              {mode === 'register'
+                ? 'Register a demo account to run the full MVP workflow.'
+                : 'Sign in to review emergency sessions, location history, and evidence.'}
             </Typography>
           </Stack>
 
           {error ? <Alert severity="error">{error}</Alert> : null}
 
+          {mode === 'register' ? (
+            <>
+              <TextField
+                autoComplete="name"
+                fullWidth
+                label="Name"
+                name="name"
+                onChange={(event) => setName(event.target.value)}
+                required
+                value={name}
+              />
+              <TextField
+                autoComplete="tel"
+                fullWidth
+                label="Phone"
+                name="phone"
+                onChange={(event) => setPhone(event.target.value)}
+                value={phone}
+              />
+            </>
+          ) : null}
           <TextField
             autoComplete="email"
             fullWidth
@@ -84,7 +114,24 @@ export function LoginPage() {
             value={password}
           />
           <Button disabled={isSubmitting} fullWidth type="submit" variant="contained">
-            {isSubmitting ? 'Signing in' : 'Sign in'}
+            {isSubmitting
+              ? mode === 'register'
+                ? 'Creating account'
+                : 'Signing in'
+              : mode === 'register'
+                ? 'Create account'
+                : 'Sign in'}
+          </Button>
+          <Button
+            disabled={isSubmitting}
+            fullWidth
+            onClick={() => {
+              setError('');
+              setMode((currentMode) => (currentMode === 'login' ? 'register' : 'login'));
+            }}
+            type="button"
+          >
+            {mode === 'register' ? 'Already have an account? Sign in' : 'Create a demo account'}
           </Button>
         </Stack>
       </Paper>

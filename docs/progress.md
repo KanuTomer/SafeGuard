@@ -251,7 +251,7 @@ The next milestone can add mobile evidence capture and upload using the existing
 
 ### Summary
 
-Adds deployment support now that the backend is live on Render, including a repeatable deployed API smoke test, deployment documentation, and Cloudinary metadata hardening for shared-account project isolation.
+Adds deployment support now that the backend is live on Render, including a repeatable deployed API smoke test, deployment documentation, Cloudinary metadata hardening for shared-account project isolation, and dashboard UI for the full MVP workflow.
 
 ### Lessons Learned
 
@@ -259,13 +259,15 @@ Adds deployment support now that the backend is live on Render, including a repe
 - Render backend settings are simpler when the monorepo root directory is set to `backend`.
 - Vercel dashboard builds only need public `VITE_*` values, while backend secrets stay on Render.
 - Shared Cloudinary accounts can be kept organized with folder namespacing, tags, and context metadata.
+- A deployed MVP demo needs write-path UI, not only read-only dashboard screens.
 
 ### Files Added
 
 - `scripts/deploymentSmokeTest.js`
 - `docs/deployment.md`
 - `backend/src/tests/cloudinaryUpload.test.js`
+- dashboard registration, contact, emergency control, and evidence upload UI
 
 ### Next Milestone
 
-The next milestone can complete Vercel dashboard deployment, update Render CORS to the final dashboard URL, and add mobile evidence capture.
+The next milestone can polish mobile deployed-backend configuration and add mobile evidence capture.

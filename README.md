@@ -46,7 +46,7 @@ SafeGuard/
 8. Evidence uploads with Cloudinary
 9. React dashboard MVP
 10. React Native mobile MVP
-11. Documentation and portfolio polish
+11. Deployment, smoke tests, and portfolio polish
 
 ## Setup
 
@@ -83,6 +83,20 @@ Backend health check:
 ```bash
 curl http://localhost:5000/api/health
 ```
+
+Deployment smoke test:
+
+```bash
+npm run smoke:deployment
+```
+
+The deployed backend currently runs at:
+
+```text
+https://safeguard-bi4x.onrender.com
+```
+
+Deployment instructions are maintained in [docs/deployment.md](docs/deployment.md).
 
 Authentication endpoints:
 
@@ -140,13 +154,8 @@ The mobile app provides login, persisted auth, SOS start/end controls, active em
 
 ## Future Features
 
-- JWT registration and login
-- Emergency contact CRUD stored inside the user document
-- SOS emergency session lifecycle
-- Location history
-- Socket.io live emergency location updates
-- Cloudinary evidence uploads
-- Authenticated dashboard MVP
-- Mobile SOS flow and manual location capture
+- deployed dashboard on Vercel
+- Render/Vercel CORS finalization
+- deployment smoke-test verification
 - Mobile evidence capture
 - API and database documentation

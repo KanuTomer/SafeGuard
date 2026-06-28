@@ -20,6 +20,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "npm run backend:lint && npm run dashboard:lint && npm run mobile:lint",
+    "smoke:deployment": "node scripts/deploymentSmokeTest.js",
     "test": "npm run backend:test && npm --prefix dashboard test && npm run mobile:test"
   },
   "keywords": [

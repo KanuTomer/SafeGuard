@@ -55,9 +55,9 @@ export function EmergencyDetailPage() {
       {socketError ? <Alert severity="warning">{socketError}</Alert> : null}
 
       <Stack
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
         direction={{ xs: 'column', sm: 'row' }}
         spacing={1}
+        sx={{ alignItems: { xs: 'flex-start', sm: 'center' } }}
       >
         <Typography component="h1" sx={{ flexGrow: 1 }} variant="h4">
           Emergency details

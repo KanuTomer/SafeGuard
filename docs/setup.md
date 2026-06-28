@@ -49,12 +49,22 @@ VITE_API_BASE_URL=http://localhost:5000
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
+Mobile variables:
+
+```text
+API_BASE_URL=http://10.0.2.2:5000
+SOCKET_URL=http://10.0.2.2:5000
+```
+
+`10.0.2.2` lets the Android emulator reach the backend running on the host machine at `localhost:5000`.
+
 ## Development Commands
 
 ```bash
 npm run backend:dev
 npm run dashboard:dev
 npm run mobile:start
+npm run mobile:android
 ```
 
 Backend health check:
@@ -70,3 +80,7 @@ Backend authentication tests use `mongodb-memory-server` so Mongoose schemas, pa
 ## Dashboard Tests
 
 Dashboard tests use Vitest, React Testing Library, and mocked API/socket services to verify routing, authentication, emergency summaries, detail views, empty states, and realtime UI updates.
+
+## Mobile Tests
+
+Mobile tests use Jest, React Test Renderer, and mocked API/location/storage services to verify login, persisted auth, SOS state, manual location sending, location permission errors, and logout.

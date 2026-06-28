@@ -73,7 +73,10 @@ Development commands:
 npm run backend:dev
 npm run dashboard:dev
 npm run mobile:start
+npm run mobile:android
 ```
+
+For Android emulator testing, the mobile app uses `http://10.0.2.2:5000` to reach the local backend running on your development machine.
 
 Backend health check:
 
@@ -131,6 +134,10 @@ Evidence uploads are handled through Cloudinary-backed backend endpoints.
 
 The dashboard provides an authenticated owner view for reviewing emergency sessions, active status, location history, evidence metadata, and realtime location updates.
 
+## Mobile MVP
+
+The mobile app provides login, persisted auth, SOS start/end controls, active emergency status, and manual current-location updates from Android.
+
 ## Future Features
 
 - JWT registration and login
@@ -140,5 +147,6 @@ The dashboard provides an authenticated owner view for reviewing emergency sessi
 - Socket.io live emergency location updates
 - Cloudinary evidence uploads
 - Authenticated dashboard MVP
-- Mobile location and evidence capture
+- Mobile SOS flow and manual location capture
+- Mobile evidence capture
 - API and database documentation

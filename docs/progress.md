@@ -223,4 +223,26 @@ Adds the first usable React dashboard MVP with authenticated login, protected ro
 
 ### Next Milestone
 
-Milestone 9 will build the React Native mobile MVP for login, SOS flow, location capture, and evidence capture.
+Milestone 9 will build the React Native mobile MVP for login, SOS flow, and manual location capture.
+
+## Milestone 9
+
+### Summary
+
+Adds the first usable React Native mobile MVP with login, persisted auth, SOS start/end controls, active emergency status, and manual current-location updates.
+
+### Lessons Learned
+
+- React Navigation gives the mobile app a clean authenticated flow.
+- AsyncStorage is a simple learning-friendly persistence layer for mobile JWTs.
+- Android location permissions must be requested at runtime before reading GPS data.
+- Mobile can use the same REST API source of truth as the dashboard and backend tests.
+
+### Files Added
+
+- mobile auth context, API services, and location helper
+- mobile navigation, login screen, SOS screen, reusable UI components, and Jest tests
+
+### Next Milestone
+
+The next milestone can add mobile evidence capture and upload using the existing backend evidence API.

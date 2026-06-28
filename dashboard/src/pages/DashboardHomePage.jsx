@@ -1,8 +1,21 @@
 import ContactsIcon from '@mui/icons-material/Contacts';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import EmergencyIcon from '@mui/icons-material/Emergency';
 import HistoryIcon from '@mui/icons-material/History';
+import PersonIcon from '@mui/icons-material/Person';
 import { useState } from 'react';
-import { Alert, Box, Button, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import { EmergencyTable } from '../components/EmergencyTable';
 import { EmptyState } from '../components/EmptyState';
@@ -12,10 +25,81 @@ import { StatusChip } from '../components/StatusChip';
 import { SummaryCard } from '../components/SummaryCard';
 import { getApiErrorMessage } from '../services/apiClient';
 import { createEmergency, createLocation, endEmergency } from '../services/emergencyService';
-import { createContact } from '../services/userService';
+import {
+  createContact,
+  deleteContact,
+  updateContact,
+  updateUserProfile,
+} from '../services/userService';
 import { useAuth } from '../hooks/useAuth';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { formatDateTime, formatLocation } from '../utils/formatters';
+
+const defaultIndiaPhonePrefix = '+91';
+
+function ProfileEditor({ isSubmittingAction, onSave, profile }) {
+  const [profileForm, setProfileForm] = useState({
+    name: profile?.name || '',
+    phone: profile?.phone || defaultIndiaPhonePrefix,
+  });
+
+  const handleProfileChange = (field) => (event) => {
+    setProfileForm((currentForm) => ({
+      ...currentForm,
+      [field]: event.target.value,
+    }));
+  };
+
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
+    await onSave(profileForm);
+  };
+
+  return (
+    <Paper
+      component="form"
+      onSubmit={handleUpdateProfile}
+      sx={{ borderRadius: 1, p: 3 }}
+      variant="outlined"
+    >
+      <Stack spacing={2}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ alignItems: 'center' }}>
+          <PersonIcon color="primary" />
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography component="h2" variant="h6">
+              Profile
+            </Typography>
+            <Typography color="text.secondary" variant="body2">
+              Update the owner details used by the SafeGuard demo account.
+            </Typography>
+          </Box>
+        </Stack>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label="Profile name"
+              onChange={handleProfileChange('name')}
+              required
+              value={profileForm.name}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label="Profile phone"
+              onChange={handleProfileChange('phone')}
+              value={profileForm.phone}
+            />
+          </Grid>
+        </Grid>
+        <Button disabled={isSubmittingAction} type="submit" variant="outlined">
+          Save profile
+        </Button>
+      </Stack>
+    </Paper>
+  );
+}
 
 export function DashboardHomePage() {
   const { user } = useAuth();
@@ -23,7 +107,14 @@ export function DashboardHomePage() {
   const [contactForm, setContactForm] = useState({
     email: '',
     name: '',
-    phone: '',
+    phone: defaultIndiaPhonePrefix,
+    relationship: '',
+  });
+  const [editingContactId, setEditingContactId] = useState('');
+  const [editingContactForm, setEditingContactForm] = useState({
+    email: '',
+    name: '',
+    phone: defaultIndiaPhonePrefix,
     relationship: '',
   });
   const [locationForm, setLocationForm] = useState({
@@ -66,6 +157,33 @@ export function DashboardHomePage() {
     }));
   };
 
+  const handleEditingContactChange = (field) => (event) => {
+    setEditingContactForm((currentForm) => ({
+      ...currentForm,
+      [field]: event.target.value,
+    }));
+  };
+
+  const startEditingContact = (contact) => {
+    setEditingContactId(contact.id);
+    setEditingContactForm({
+      email: contact.email || '',
+      name: contact.name || '',
+      phone: contact.phone || defaultIndiaPhonePrefix,
+      relationship: contact.relationship || '',
+    });
+  };
+
+  const cancelEditingContact = () => {
+    setEditingContactId('');
+    setEditingContactForm({
+      email: '',
+      name: '',
+      phone: defaultIndiaPhonePrefix,
+      relationship: '',
+    });
+  };
+
   const handleLocationChange = (field) => (event) => {
     setLocationForm((currentForm) => ({
       ...currentForm,
@@ -77,9 +195,30 @@ export function DashboardHomePage() {
     event.preventDefault();
     await runDashboardAction('Emergency contact added.', async () => {
       await createContact(contactForm);
-      setContactForm({ email: '', name: '', phone: '', relationship: '' });
+      setContactForm({ email: '', name: '', phone: defaultIndiaPhonePrefix, relationship: '' });
     });
   };
+
+  const handleUpdateProfile = (profileForm) =>
+    runDashboardAction('Profile updated.', async () => {
+      await updateUserProfile(profileForm);
+    });
+
+  const handleUpdateContact = async (event) => {
+    event.preventDefault();
+    await runDashboardAction('Emergency contact updated.', async () => {
+      await updateContact(editingContactId, editingContactForm);
+      cancelEditingContact();
+    });
+  };
+
+  const handleDeleteContact = (contactId) =>
+    runDashboardAction('Emergency contact deleted.', async () => {
+      await deleteContact(contactId);
+      if (editingContactId === contactId) {
+        cancelEditingContact();
+      }
+    });
 
   const handleStartEmergency = () =>
     runDashboardAction('Emergency session started.', async () => {
@@ -145,6 +284,13 @@ export function DashboardHomePage() {
         </Grid>
       </Grid>
 
+      <ProfileEditor
+        isSubmittingAction={isSubmittingAction}
+        key={profile?.updatedAt || profile?.id || 'profile'}
+        onSave={handleUpdateProfile}
+        profile={profile}
+      />
+
       <Paper sx={{ borderRadius: 1, p: 3 }} variant="outlined">
         <Stack spacing={2}>
           <Stack
@@ -190,7 +336,7 @@ export function DashboardHomePage() {
               />
               <TextField
                 fullWidth
-                label="Phone"
+                label="Contact phone"
                 onChange={handleContactChange('phone')}
                 value={contactForm.phone}
               />
@@ -212,12 +358,89 @@ export function DashboardHomePage() {
               </Button>
               {profile?.contacts?.length ? (
                 <Stack spacing={1}>
-                  {profile.contacts.map((contact) => (
-                    <Typography key={contact.id} color="text.secondary" variant="body2">
-                      {contact.name} {contact.relationship ? `(${contact.relationship})` : ''} ·{' '}
-                      {[contact.phone, contact.email].filter(Boolean).join(' · ')}
-                    </Typography>
-                  ))}
+                  {profile.contacts.map((contact) =>
+                    editingContactId === contact.id ? (
+                      <Stack
+                        component="form"
+                        key={contact.id}
+                        onSubmit={handleUpdateContact}
+                        spacing={1}
+                        sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}
+                      >
+                        <TextField
+                          fullWidth
+                          label="Edit contact name"
+                          onChange={handleEditingContactChange('name')}
+                          required
+                          size="small"
+                          value={editingContactForm.name}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Edit contact phone"
+                          onChange={handleEditingContactChange('phone')}
+                          size="small"
+                          value={editingContactForm.phone}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Edit contact email"
+                          onChange={handleEditingContactChange('email')}
+                          size="small"
+                          type="email"
+                          value={editingContactForm.email}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Edit contact relationship"
+                          onChange={handleEditingContactChange('relationship')}
+                          size="small"
+                          value={editingContactForm.relationship}
+                        />
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                          <Button disabled={isSubmittingAction} size="small" type="submit">
+                            Save contact
+                          </Button>
+                          <Button
+                            disabled={isSubmittingAction}
+                            onClick={cancelEditingContact}
+                            size="small"
+                            type="button"
+                          >
+                            Cancel
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    ) : (
+                      <Stack
+                        direction="row"
+                        key={contact.id}
+                        spacing={1}
+                        sx={{ alignItems: 'center' }}
+                      >
+                        <Typography color="text.secondary" sx={{ flexGrow: 1 }} variant="body2">
+                          {contact.name} {contact.relationship ? `(${contact.relationship})` : ''} ·{' '}
+                          {[contact.phone, contact.email].filter(Boolean).join(' · ')}
+                        </Typography>
+                        <IconButton
+                          aria-label={`Edit ${contact.name}`}
+                          disabled={isSubmittingAction}
+                          onClick={() => startEditingContact(contact)}
+                          size="small"
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          aria-label={`Delete ${contact.name}`}
+                          disabled={isSubmittingAction}
+                          onClick={() => handleDeleteContact(contact.id)}
+                          size="small"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Stack>
+                    )
+                  )}
                 </Stack>
               ) : (
                 <EmptyState message="No emergency contacts yet." />

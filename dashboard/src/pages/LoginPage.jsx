@@ -16,7 +16,7 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState('login');
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+91');
 
   if (isAuthenticated) {
     return <Navigate replace to="/dashboard" />;
@@ -106,7 +106,13 @@ export function LoginPage() {
           <TextField
             autoComplete="current-password"
             fullWidth
+            helperText={mode === 'register' ? 'Use at least 8 characters.' : ''}
             label="Password"
+            slotProps={{
+              htmlInput: {
+                minLength: mode === 'register' ? 8 : undefined,
+              },
+            }}
             name="password"
             onChange={(event) => setPassword(event.target.value)}
             required

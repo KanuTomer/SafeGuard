@@ -31,7 +31,16 @@ apiClient.interceptors.response.use(
 );
 
 export const getApiErrorMessage = (error, fallback = 'Something went wrong') => {
-  return error.response?.data?.message || error.message || fallback;
+  const responseData = error.response?.data;
+  const validationErrors = Array.isArray(responseData?.errors)
+    ? responseData.errors.filter(Boolean)
+    : [];
+
+  if (validationErrors.length > 0) {
+    return validationErrors.join(' ');
+  }
+
+  return responseData?.message || error.message || fallback;
 };
 
 export default apiClient;

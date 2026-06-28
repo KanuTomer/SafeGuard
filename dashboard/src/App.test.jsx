@@ -25,7 +25,10 @@ vi.mock('./services/emergencyService', () => ({
 
 vi.mock('./services/userService', () => ({
   createContact: vi.fn(),
+  deleteContact: vi.fn(),
   getUserProfile: vi.fn(),
+  updateContact: vi.fn(),
+  updateUserProfile: vi.fn(),
 }));
 
 vi.mock('./services/socketService', () => ({
@@ -159,7 +162,10 @@ beforeEach(() => {
     createdAt: '2026-06-28T10:11:00.000Z',
   });
   userService.createContact.mockResolvedValue(testProfile.contacts[0]);
+  userService.deleteContact.mockResolvedValue();
   userService.getUserProfile.mockResolvedValue(testProfile);
+  userService.updateContact.mockResolvedValue(testProfile.contacts[0]);
+  userService.updateUserProfile.mockResolvedValue(testProfile);
 });
 
 afterEach(() => {
@@ -191,11 +197,9 @@ describe('SafeGuard dashboard', () => {
     renderApp('/login');
 
     fireEvent.click(screen.getByRole('button', { name: /create a demo account/i }));
+    expect(screen.getByLabelText(/phone/i)).toHaveValue('+91');
     fireEvent.change(screen.getByLabelText(/name/i), {
       target: { value: 'Kanu Tomer' },
-    });
-    fireEvent.change(screen.getByLabelText(/phone/i), {
-      target: { value: '+911234567890' },
     });
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'kanu@example.com' },
@@ -208,12 +212,38 @@ describe('SafeGuard dashboard', () => {
     await waitFor(() => {
       expect(authService.registerUser).toHaveBeenCalledWith({
         name: 'Kanu Tomer',
-        phone: '+911234567890',
+        phone: '+91',
         email: 'kanu@example.com',
         password: 'Password123',
       });
     });
     expect(localStorage.getItem('safeguard.dashboard.token')).toBe('test-token');
+  });
+
+  it('shows detailed registration validation errors from the API', async () => {
+    authService.registerUser.mockRejectedValue({
+      response: {
+        data: {
+          errors: ['Password must be at least 8 characters'],
+          message: 'Validation failed',
+        },
+      },
+    });
+    renderApp('/login');
+
+    fireEvent.click(screen.getByRole('button', { name: /create a demo account/i }));
+    fireEvent.change(screen.getByLabelText(/name/i), {
+      target: { value: 'Kanu Tomer' },
+    });
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'kanu@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'Password123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /create account/i }));
+
+    expect(await screen.findByText(/password must be at least 8 characters/i)).toBeInTheDocument();
   });
 
   it('redirects protected routes to login when unauthenticated', async () => {
@@ -240,10 +270,11 @@ describe('SafeGuard dashboard', () => {
     renderApp('/dashboard');
 
     await screen.findByRole('heading', { name: 'Dashboard' });
+    expect(screen.getByLabelText(/contact phone/i)).toHaveValue('+91');
     fireEvent.change(screen.getByLabelText(/contact name/i), {
       target: { value: 'Asha' },
     });
-    fireEvent.change(screen.getByLabelText(/^phone$/i), {
+    fireEvent.change(screen.getByLabelText(/contact phone/i), {
       target: { value: '+911111111111' },
     });
     fireEvent.change(screen.getByLabelText(/^email$/i), {
@@ -261,6 +292,54 @@ describe('SafeGuard dashboard', () => {
         email: 'asha@example.com',
         relationship: 'Friend',
       });
+    });
+  });
+
+  it('updates profile information from the dashboard', async () => {
+    seedAuthenticatedSession();
+    renderApp('/dashboard');
+
+    await screen.findByRole('heading', { name: 'Dashboard' });
+    fireEvent.change(screen.getByLabelText(/profile name/i), {
+      target: { value: 'Kanu SafeGuard' },
+    });
+    fireEvent.change(screen.getByLabelText(/profile phone/i), {
+      target: { value: '+919999999999' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save profile/i }));
+
+    await waitFor(() => {
+      expect(userService.updateUserProfile).toHaveBeenCalledWith({
+        name: 'Kanu SafeGuard',
+        phone: '+919999999999',
+      });
+    });
+  });
+
+  it('edits and deletes emergency contacts from the dashboard', async () => {
+    seedAuthenticatedSession();
+    renderApp('/dashboard');
+
+    await screen.findByRole('heading', { name: 'Dashboard' });
+    fireEvent.click(screen.getByRole('button', { name: /edit asha/i }));
+    fireEvent.change(screen.getByLabelText(/edit contact phone/i), {
+      target: { value: '+912222222222' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save contact/i }));
+
+    await waitFor(() => {
+      expect(userService.updateContact).toHaveBeenCalledWith('contact-1', {
+        name: 'Asha',
+        phone: '+912222222222',
+        email: 'asha@example.com',
+        relationship: 'Friend',
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /delete asha/i }));
+
+    await waitFor(() => {
+      expect(userService.deleteContact).toHaveBeenCalledWith('contact-1');
     });
   });
 

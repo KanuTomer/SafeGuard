@@ -62,7 +62,15 @@
 - evidence listing endpoint
 - evidence upload tests
 
+## Milestone 8: Dashboard MVP
+
+- authenticated React dashboard
+- protected dashboard routes
+- emergency session summary and detail views
+- location history and evidence display
+- realtime location updates in emergency detail view
+- dashboard tests
+
 ## Later Milestones
 
-- dashboard MVP
 - mobile MVP

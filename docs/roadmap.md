@@ -81,7 +81,15 @@
 - Android location permissions
 - mobile tests
 
+## Milestone 10: Deployment and Smoke Tests
+
+- Render backend deployment
+- deployed API smoke test
+- Cloudinary evidence metadata hardening
+- Vercel dashboard deployment guide
+- deployment documentation
+
 ## Later Milestones
 
 - mobile evidence capture
-- portfolio polish and deployment
+- portfolio presentation polish

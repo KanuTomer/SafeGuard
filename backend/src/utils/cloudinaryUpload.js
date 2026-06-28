@@ -7,8 +7,14 @@ const uploadBufferToCloudinary = (file, options = {}) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
+        context: {
+          app: 'safeguard',
+          project: 'safeguard',
+          uploadType: 'evidence',
+        },
         folder: env.cloudinaryUploadFolder,
         resource_type: options.resourceType || 'auto',
+        tags: ['safeguard', 'evidence'],
       },
       (error, result) => {
         if (error) {

@@ -246,3 +246,26 @@ Adds the first usable React Native mobile MVP with login, persisted auth, SOS st
 ### Next Milestone
 
 The next milestone can add mobile evidence capture and upload using the existing backend evidence API.
+
+## Milestone 10
+
+### Summary
+
+Adds deployment support now that the backend is live on Render, including a repeatable deployed API smoke test, deployment documentation, and Cloudinary metadata hardening for shared-account project isolation.
+
+### Lessons Learned
+
+- Deployment verification should test real database writes, not only health checks.
+- Render backend settings are simpler when the monorepo root directory is set to `backend`.
+- Vercel dashboard builds only need public `VITE_*` values, while backend secrets stay on Render.
+- Shared Cloudinary accounts can be kept organized with folder namespacing, tags, and context metadata.
+
+### Files Added
+
+- `scripts/deploymentSmokeTest.js`
+- `docs/deployment.md`
+- `backend/src/tests/cloudinaryUpload.test.js`
+
+### Next Milestone
+
+The next milestone can complete Vercel dashboard deployment, update Render CORS to the final dashboard URL, and add mobile evidence capture.

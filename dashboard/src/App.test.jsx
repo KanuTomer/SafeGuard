@@ -1,5 +1,4 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -143,12 +142,15 @@ afterEach(() => {
 
 describe('SafeGuard dashboard', () => {
   it('submits the login form and stores auth state', async () => {
-    const user = userEvent.setup();
     renderApp('/login');
 
-    await user.type(screen.getByLabelText(/email/i), 'kanu@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'Password123');
-    await user.click(screen.getByRole('button', { name: /sign in/i }));
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'kanu@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'Password123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
       expect(authService.loginUser).toHaveBeenCalledWith({

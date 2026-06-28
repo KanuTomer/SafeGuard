@@ -18,13 +18,13 @@ export function DashboardLayout() {
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       <AppBar color="inherit" elevation={0} position="sticky">
         <Toolbar sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-          <Stack alignItems="center" direction="row" spacing={1} sx={{ flexGrow: 1 }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexGrow: 1 }}>
             <ShieldIcon color="primary" />
             <Typography component="div" sx={{ fontWeight: 700 }} variant="h6">
               SafeGuard
             </Typography>
           </Stack>
-          <Stack alignItems="center" direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Typography
               color="text.secondary"
               sx={{ display: { xs: 'none', sm: 'block' } }}

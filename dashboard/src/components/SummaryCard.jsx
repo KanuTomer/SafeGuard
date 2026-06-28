@@ -4,7 +4,7 @@ export function SummaryCard({ icon, label, value }) {
   return (
     <Card variant="outlined" sx={{ borderRadius: 1, height: '100%' }}>
       <CardContent>
-        <Stack alignItems="center" direction="row" spacing={1.5}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
           {icon}
           <Typography color="text.secondary" variant="body2">
             {label}

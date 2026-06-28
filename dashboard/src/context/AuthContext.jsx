@@ -33,6 +33,7 @@ export function AuthProvider({ children }) {
     setAuthToken(null);
     setToken(null);
     setUser(null);
+    setIsBootstrapping(false);
   }, []);
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem(TOKEN_KEY, authData.token);
     localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
     setAuthToken(authData.token);
+    setIsBootstrapping(false);
     setToken(authData.token);
     setUser(authData.user);
     return authData.user;

@@ -61,9 +61,9 @@ export function DashboardHomePage() {
       <Paper sx={{ borderRadius: 1, p: 3 }} variant="outlined">
         <Stack spacing={2}>
           <Stack
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1}
+            sx={{ alignItems: { xs: 'flex-start', sm: 'center' } }}
           >
             <Typography component="h2" sx={{ flexGrow: 1 }} variant="h6">
               Active session

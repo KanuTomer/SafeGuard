@@ -127,6 +127,10 @@ socket:error
 
 Evidence uploads are handled through Cloudinary-backed backend endpoints.
 
+## Dashboard MVP
+
+The dashboard provides an authenticated owner view for reviewing emergency sessions, active status, location history, evidence metadata, and realtime location updates.
+
 ## Future Features
 
 - JWT registration and login
@@ -135,5 +139,6 @@ Evidence uploads are handled through Cloudinary-backed backend endpoints.
 - Location history
 - Socket.io live emergency location updates
 - Cloudinary evidence uploads
+- Authenticated dashboard MVP
 - Mobile location and evidence capture
 - API and database documentation

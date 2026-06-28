@@ -201,3 +201,26 @@ Adds backend evidence upload support for active emergency sessions using Multer 
 ### Next Milestone
 
 Milestone 8 will begin the React dashboard MVP.
+
+## Milestone 8
+
+### Summary
+
+Adds the first usable React dashboard MVP with authenticated login, protected routes, emergency session summaries, emergency detail views, location history, evidence display, and realtime location updates.
+
+### Lessons Learned
+
+- React Router protects UI routes while the backend remains the source of truth.
+- A small API service layer keeps Axios details out of components.
+- Context is a practical fit for dashboard auth state in a MERN portfolio project.
+- Socket.io client subscriptions can enhance REST-loaded data without replacing REST persistence.
+
+### Files Added
+
+- dashboard services for API, auth, users, emergencies, and sockets
+- dashboard auth context and hooks
+- dashboard layout, pages, reusable components, and tests
+
+### Next Milestone
+
+Milestone 9 will build the React Native mobile MVP for login, SOS flow, location capture, and evidence capture.

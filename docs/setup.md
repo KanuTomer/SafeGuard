@@ -36,6 +36,17 @@ MONGODB_URI=mongodb+srv://username:password@cluster.example.mongodb.net/safeguar
 CLIENT_URL=http://localhost:5173
 JWT_SECRET=replace_with_a_long_random_secret
 JWT_EXPIRES_IN=7d
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_UPLOAD_FOLDER=safeguard/evidence
+```
+
+Dashboard variables:
+
+```text
+VITE_API_BASE_URL=http://localhost:5000
+VITE_SOCKET_URL=http://localhost:5000
 ```
 
 ## Development Commands
@@ -55,3 +66,7 @@ curl http://localhost:5000/api/health
 ## Backend Tests
 
 Backend authentication tests use `mongodb-memory-server` so Mongoose schemas, password hashing hooks, unique indexes, and queries can be tested without touching MongoDB Atlas.
+
+## Dashboard Tests
+
+Dashboard tests use Vitest, React Testing Library, and mocked API/socket services to verify routing, authentication, emergency summaries, detail views, empty states, and realtime UI updates.

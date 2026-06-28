@@ -71,6 +71,17 @@
 - realtime location updates in emergency detail view
 - dashboard tests
 
+## Milestone 9: Mobile MVP
+
+- authenticated React Native app
+- persisted mobile auth state
+- SOS start and end controls
+- active emergency status view
+- manual current-location updates
+- Android location permissions
+- mobile tests
+
 ## Later Milestones
 
-- mobile MVP
+- mobile evidence capture
+- portfolio polish and deployment

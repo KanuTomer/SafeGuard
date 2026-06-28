@@ -73,6 +73,29 @@ Backend health check:
 curl http://localhost:5000/api/health
 ```
 
+## Deployment
+
+Render, Vercel, MongoDB Atlas, and Cloudinary setup instructions are maintained in [`docs/deployment.md`](deployment.md).
+
+Current deployed backend:
+
+```text
+https://safeguard-bi4x.onrender.com
+```
+
+Run the deployed API smoke test:
+
+```bash
+npm run smoke:deployment
+```
+
+Dashboard production environment values:
+
+```text
+VITE_API_BASE_URL=https://safeguard-bi4x.onrender.com
+VITE_SOCKET_URL=https://safeguard-bi4x.onrender.com
+```
+
 ## Backend Tests
 
 Backend authentication tests use `mongodb-memory-server` so Mongoose schemas, password hashing hooks, unique indexes, and queries can be tested without touching MongoDB Atlas.

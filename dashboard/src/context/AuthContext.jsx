@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getCurrentUser, loginUser } from '../services/authService';
+import { getCurrentUser, loginUser, registerUser } from '../services/authService';
 import { setAuthToken, setUnauthorizedHandler } from '../services/apiClient';
 import { AuthContext } from './authContextValue';
 
@@ -86,16 +86,28 @@ export function AuthProvider({ children }) {
     return authData.user;
   }, []);
 
+  const register = useCallback(async (payload) => {
+    const authData = await registerUser(payload);
+    localStorage.setItem(TOKEN_KEY, authData.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+    setAuthToken(authData.token);
+    setIsBootstrapping(false);
+    setToken(authData.token);
+    setUser(authData.user);
+    return authData.user;
+  }, []);
+
   const value = useMemo(
     () => ({
       isAuthenticated: Boolean(token),
       isBootstrapping,
       login,
       logout,
+      register,
       token,
       user,
     }),
-    [isBootstrapping, login, logout, token, user]
+    [isBootstrapping, login, logout, register, token, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

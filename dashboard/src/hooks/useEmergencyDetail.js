@@ -10,10 +10,30 @@ export const useEmergencyDetail = (emergencyId) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadEmergency = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [session, locationHistory, evidenceItems] = await Promise.all([
+        getEmergency(emergencyId),
+        listLocations(emergencyId),
+        listEvidence(emergencyId),
+      ]);
+
+      setEmergency(session);
+      setLocations(locationHistory);
+      setEvidence(evidenceItems);
+      setError('');
+    } catch (loadError) {
+      setError(getApiErrorMessage(loadError, 'Unable to load emergency details'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [emergencyId]);
+
   useEffect(() => {
     let isMounted = true;
 
-    const loadEmergency = async () => {
+    const loadInitialEmergency = async () => {
       try {
         setIsLoading(true);
         const [session, locationHistory, evidenceItems] = await Promise.all([
@@ -41,7 +61,7 @@ export const useEmergencyDetail = (emergencyId) => {
       }
     };
 
-    loadEmergency();
+    loadInitialEmergency();
 
     return () => {
       isMounted = false;
@@ -89,5 +109,6 @@ export const useEmergencyDetail = (emergencyId) => {
     evidence,
     isLoading,
     locations,
+    reload: loadEmergency,
   };
 };

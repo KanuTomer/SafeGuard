@@ -84,6 +84,11 @@
 ## Milestone 10: Deployment and Smoke Tests
 
 - Render backend deployment
+- full dashboard MVP workflow
+- dashboard registration
+- dashboard emergency contacts
+- dashboard emergency controls
+- dashboard evidence upload
 - deployed API smoke test
 - Cloudinary evidence metadata hardening
 - Vercel dashboard deployment guide

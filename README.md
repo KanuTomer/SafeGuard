@@ -146,7 +146,7 @@ Evidence uploads are handled through Cloudinary-backed backend endpoints.
 
 ## Dashboard MVP
 
-The dashboard provides an authenticated owner view for reviewing emergency sessions, active status, location history, evidence metadata, and realtime location updates.
+The dashboard provides the primary deployed MVP workflow: registration, login, emergency contact setup, emergency start/end controls, manual location updates, evidence upload, emergency history, evidence metadata, and realtime location updates.
 
 ## Mobile MVP
 
@@ -154,8 +154,6 @@ The mobile app provides login, persisted auth, SOS start/end controls, active em
 
 ## Future Features
 
-- deployed dashboard on Vercel
-- Render/Vercel CORS finalization
-- deployment smoke-test verification
+- mobile deployed-backend configuration polish
 - Mobile evidence capture
 - API and database documentation

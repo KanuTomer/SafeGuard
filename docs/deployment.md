@@ -88,6 +88,25 @@ VITE_SOCKET_URL=https://safeguard-bi4x.onrender.com
 
 After Vercel deployment, update Render `CLIENT_URL` to the Vercel URL.
 
+## Full MVP Demo Workflow
+
+Use the deployed Vercel dashboard as the main portfolio demo surface.
+
+Manual workflow:
+
+1. Open the Vercel dashboard URL.
+2. Create a new demo account.
+3. Add at least one emergency contact.
+4. Start an emergency session from the dashboard controls.
+5. Send a manual location point.
+6. Open the active emergency detail page from the history table.
+7. Upload image or audio evidence while the emergency is active.
+8. Return to the dashboard and end the emergency.
+9. Open the ended emergency detail page.
+10. Confirm contacts snapshot, location history, and evidence metadata are visible.
+
+The dashboard uses the same deployed Render backend and MongoDB Atlas database as the smoke tests.
+
 ## Deployment Smoke Test
 
 Run this command after deploying the backend:

@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Alert, Button, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Button, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
 
 import { EmptyState } from '../components/EmptyState';
 import { ErrorAlert } from '../components/ErrorAlert';
@@ -10,14 +10,21 @@ import { LoadingState } from '../components/LoadingState';
 import { LocationList } from '../components/LocationList';
 import { StatusChip } from '../components/StatusChip';
 import { SummaryCard } from '../components/SummaryCard';
+import { getApiErrorMessage } from '../services/apiClient';
+import { uploadEvidence } from '../services/emergencyService';
 import { useEmergencyDetail } from '../hooks/useEmergencyDetail';
 import { useEmergencySocket } from '../hooks/useEmergencySocket';
 import { formatDateTime, formatLocation } from '../utils/formatters';
 
 export function EmergencyDetailPage() {
   const { emergencyId } = useParams();
-  const { addRealtimeLocation, emergency, error, evidence, isLoading, locations } =
+  const { addRealtimeLocation, emergency, error, evidence, isLoading, locations, reload } =
     useEmergencyDetail(emergencyId);
+  const [evidenceFile, setEvidenceFile] = useState(null);
+  const [evidenceNotes, setEvidenceNotes] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const handleLocationCreated = useCallback(
     (location) => {
       addRealtimeLocation(location);
@@ -25,6 +32,34 @@ export function EmergencyDetailPage() {
     [addRealtimeLocation]
   );
   const { socketError } = useEmergencySocket(emergencyId, handleLocationCreated);
+
+  const handleEvidenceUpload = async (event) => {
+    event.preventDefault();
+    setUploadError('');
+    setUploadSuccess('');
+
+    if (!evidenceFile) {
+      setUploadError('Choose an image or audio file before uploading.');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      await uploadEvidence(emergencyId, {
+        file: evidenceFile,
+        notes: evidenceNotes,
+      });
+      setEvidenceFile(null);
+      setEvidenceNotes('');
+      await reload();
+      setUploadSuccess('Evidence uploaded.');
+    } catch (uploadFailure) {
+      setUploadError(getApiErrorMessage(uploadFailure, 'Unable to upload evidence'));
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   if (isLoading) {
     return <LoadingState message="Loading emergency details" />;
@@ -53,6 +88,8 @@ export function EmergencyDetailPage() {
       </Button>
 
       {socketError ? <Alert severity="warning">{socketError}</Alert> : null}
+      {uploadError ? <Alert severity="error">{uploadError}</Alert> : null}
+      {uploadSuccess ? <Alert severity="success">{uploadSuccess}</Alert> : null}
 
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
@@ -125,6 +162,35 @@ export function EmergencyDetailPage() {
           <Typography component="h2" variant="h6">
             Evidence
           </Typography>
+          {emergency.status === 'active' ? (
+            <Stack component="form" onSubmit={handleEvidenceUpload} spacing={2}>
+              <Button component="label" variant="outlined">
+                {evidenceFile ? evidenceFile.name : 'Choose image or audio'}
+                <input
+                  aria-label="Choose image or audio"
+                  accept="image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/webm"
+                  hidden
+                  onChange={(event) => setEvidenceFile(event.target.files?.[0] || null)}
+                  type="file"
+                />
+              </Button>
+              <TextField
+                fullWidth
+                label="Evidence notes"
+                multiline
+                onChange={(event) => setEvidenceNotes(event.target.value)}
+                rows={2}
+                value={evidenceNotes}
+              />
+              <Button disabled={isUploading} type="submit" variant="contained">
+                {isUploading ? 'Uploading evidence' : 'Upload evidence'}
+              </Button>
+            </Stack>
+          ) : (
+            <Alert severity="info">
+              Evidence can only be uploaded while an emergency is active.
+            </Alert>
+          )}
           {evidence.length > 0 ? (
             <EvidenceList evidence={evidence} />
           ) : (

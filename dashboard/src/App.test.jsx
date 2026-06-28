@@ -8,17 +8,23 @@ import { AuthProvider } from './context/AuthContext';
 vi.mock('./services/authService', () => ({
   getCurrentUser: vi.fn(),
   loginUser: vi.fn(),
+  registerUser: vi.fn(),
 }));
 
 vi.mock('./services/emergencyService', () => ({
+  createEmergency: vi.fn(),
+  createLocation: vi.fn(),
+  endEmergency: vi.fn(),
   getActiveEmergency: vi.fn(),
   getEmergency: vi.fn(),
   listEmergencies: vi.fn(),
   listEvidence: vi.fn(),
   listLocations: vi.fn(),
+  uploadEvidence: vi.fn(),
 }));
 
 vi.mock('./services/userService', () => ({
+  createContact: vi.fn(),
   getUserProfile: vi.fn(),
 }));
 
@@ -109,7 +115,17 @@ beforeEach(() => {
   latestSocket = createMockSocket();
   socketService.createEmergencySocket.mockReturnValue(latestSocket);
   authService.loginUser.mockResolvedValue({ token: 'test-token', user: testUser });
+  authService.registerUser.mockResolvedValue({ token: 'test-token', user: testUser });
   authService.getCurrentUser.mockResolvedValue(testUser);
+  emergencyService.createEmergency.mockResolvedValue(activeEmergency);
+  emergencyService.createLocation.mockResolvedValue({
+    id: 'location-2',
+    latitude: 28.7,
+    longitude: 77.3,
+    accuracy: 8,
+    recordedAt: '2026-06-28T10:06:00.000Z',
+  });
+  emergencyService.endEmergency.mockResolvedValue(endedEmergency);
   emergencyService.getActiveEmergency.mockResolvedValue(activeEmergency);
   emergencyService.listEmergencies.mockResolvedValue([activeEmergency, endedEmergency]);
   emergencyService.getEmergency.mockResolvedValue(activeEmergency);
@@ -133,6 +149,16 @@ beforeEach(() => {
       createdAt: '2026-06-28T10:10:00.000Z',
     },
   ]);
+  emergencyService.uploadEvidence.mockResolvedValue({
+    id: 'evidence-2',
+    type: 'image',
+    originalName: 'scene.png',
+    size: 1024,
+    secureUrl: 'https://example.com/scene.png',
+    notes: 'Scene photo',
+    createdAt: '2026-06-28T10:11:00.000Z',
+  });
+  userService.createContact.mockResolvedValue(testProfile.contacts[0]);
   userService.getUserProfile.mockResolvedValue(testProfile);
 });
 
@@ -161,6 +187,35 @@ describe('SafeGuard dashboard', () => {
     expect(localStorage.getItem('safeguard.dashboard.token')).toBe('test-token');
   });
 
+  it('registers a new account and stores auth state', async () => {
+    renderApp('/login');
+
+    fireEvent.click(screen.getByRole('button', { name: /create a demo account/i }));
+    fireEvent.change(screen.getByLabelText(/name/i), {
+      target: { value: 'Kanu Tomer' },
+    });
+    fireEvent.change(screen.getByLabelText(/phone/i), {
+      target: { value: '+911234567890' },
+    });
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'kanu@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'Password123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /create account/i }));
+
+    await waitFor(() => {
+      expect(authService.registerUser).toHaveBeenCalledWith({
+        name: 'Kanu Tomer',
+        phone: '+911234567890',
+        email: 'kanu@example.com',
+        password: 'Password123',
+      });
+    });
+    expect(localStorage.getItem('safeguard.dashboard.token')).toBe('test-token');
+  });
+
   it('redirects protected routes to login when unauthenticated', async () => {
     renderApp('/dashboard');
 
@@ -180,6 +235,70 @@ describe('SafeGuard dashboard', () => {
     expect(screen.getByRole('table', { name: /emergency sessions/i })).toBeInTheDocument();
   });
 
+  it('adds an emergency contact from the dashboard', async () => {
+    seedAuthenticatedSession();
+    renderApp('/dashboard');
+
+    await screen.findByRole('heading', { name: 'Dashboard' });
+    fireEvent.change(screen.getByLabelText(/contact name/i), {
+      target: { value: 'Asha' },
+    });
+    fireEvent.change(screen.getByLabelText(/^phone$/i), {
+      target: { value: '+911111111111' },
+    });
+    fireEvent.change(screen.getByLabelText(/^email$/i), {
+      target: { value: 'asha@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText(/relationship/i), {
+      target: { value: 'Friend' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /add contact/i }));
+
+    await waitFor(() => {
+      expect(userService.createContact).toHaveBeenCalledWith({
+        name: 'Asha',
+        phone: '+911111111111',
+        email: 'asha@example.com',
+        relationship: 'Friend',
+      });
+    });
+  });
+
+  it('starts, updates, and ends an emergency from dashboard controls', async () => {
+    seedAuthenticatedSession();
+    emergencyService.getActiveEmergency
+      .mockResolvedValueOnce(null)
+      .mockResolvedValue(activeEmergency);
+    emergencyService.listEmergencies.mockResolvedValue([]);
+    renderApp('/dashboard');
+
+    await screen.findByRole('heading', { name: 'Dashboard' });
+    fireEvent.click(screen.getByRole('button', { name: /start emergency/i }));
+
+    await waitFor(() => {
+      expect(emergencyService.createEmergency).toHaveBeenCalled();
+    });
+
+    expect(await screen.findByText(/emergency session started/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /send location/i }));
+
+    await waitFor(() => {
+      expect(emergencyService.createLocation).toHaveBeenCalledWith(
+        activeEmergency.id,
+        expect.objectContaining({
+          latitude: 28.6139,
+          longitude: 77.209,
+        })
+      );
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /end emergency/i }));
+
+    await waitFor(() => {
+      expect(emergencyService.endEmergency).toHaveBeenCalledWith(activeEmergency.id);
+    });
+  });
+
   it('renders emergency details, locations, and evidence', async () => {
     seedAuthenticatedSession();
     renderApp('/emergencies/emergency-1');
@@ -188,6 +307,28 @@ describe('SafeGuard dashboard', () => {
     expect(screen.getByText(/contacts snapshot/i)).toBeInTheDocument();
     expect(screen.getAllByText(/28.61390, 77.20900/i).length).toBeGreaterThan(0);
     expect(screen.getByText('door.png')).toBeInTheDocument();
+  });
+
+  it('uploads evidence from the emergency detail page', async () => {
+    seedAuthenticatedSession();
+    renderApp('/emergencies/emergency-1');
+
+    await screen.findByRole('heading', { name: /emergency details/i });
+    const file = new File(['fake image'], 'scene.png', { type: 'image/png' });
+    fireEvent.change(screen.getByLabelText(/choose image or audio/i), {
+      target: { files: [file] },
+    });
+    fireEvent.change(screen.getByLabelText(/evidence notes/i), {
+      target: { value: 'Scene photo' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /upload evidence/i }));
+
+    await waitFor(() => {
+      expect(emergencyService.uploadEvidence).toHaveBeenCalledWith('emergency-1', {
+        file,
+        notes: 'Scene photo',
+      });
+    });
   });
 
   it('logs out when auth bootstrap fails', async () => {
